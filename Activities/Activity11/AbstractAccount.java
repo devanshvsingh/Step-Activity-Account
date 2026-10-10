@@ -1,0 +1,166 @@
+package Activity11;
+
+public abstract class AbstractAccount implements IAccount {
+
+    protected String accountNumber;
+    protected String name;
+    protected int age;
+    protected double balance;
+    protected String accountType;
+    protected String status;
+    protected String pin;
+
+    public AbstractAccount(String accountNumber, String name, int age,
+                           double balance, String accountType,
+                           String status, String pin) {
+
+        if (age < 18) {
+            throw new IllegalArgumentException(
+                "Customer age must be 18 or above"
+            );
+        }
+
+        if (balance < 0) {
+            throw new IllegalArgumentException(
+                "Initial balance cannot be negative"
+            );
+        }
+
+        if (pin == null || !pin.matches("\\d{4}")) {
+            throw new IllegalArgumentException(
+                "PIN must be 4 digits"
+            );
+        }
+
+        this.accountNumber = accountNumber;
+        this.name = name;
+        this.age = age;
+        this.balance = balance;
+        this.accountType = accountType;
+        this.status = status;
+        this.pin = pin;
+    }
+
+    @Override
+    public boolean validatePin(String enteredPin) {
+        return this.pin != null && this.pin.equals(enteredPin);
+    }
+
+    @Override
+    public boolean changePin(String oldPin, String newPin) {
+
+        if (!validatePin(oldPin)) {
+            return false;
+        }
+
+        if (newPin == null || !newPin.matches("\\d{4}")) {
+            return false;
+        }
+
+        this.pin = newPin;
+        return true;
+    }
+
+    @Override
+    public void deposit(double amount)
+            throws InvalidAmountException {
+
+        if (amount <= 0) {
+            throw new InvalidAmountException(
+                "Deposit amount must be positive"
+            );
+        }
+
+        balance += amount;
+    }
+
+    @Override
+    public void withdraw(double amount, String enteredPin)
+            throws AccountException {
+
+        // Step 1: Check PIN
+        if (!validatePin(enteredPin)) {
+            throw new InvalidPinException(
+                "Invalid PIN entered"
+            );
+        }
+
+        // Step 2: Check account status
+        if (!"ACTIVE".equalsIgnoreCase(status)) {
+            throw new InactiveAccountException(
+                "Account is not active"
+            );
+        }
+
+        // Step 3: Check amount
+        if (amount <= 0) {
+            throw new InvalidAmountException(
+                "Withdrawal amount must be positive"
+            );
+        }
+
+        // Step 4: Let child class process debit
+        processDebit(amount);
+    }
+
+    public abstract void processDebit(double amount)
+            throws AccountException;
+
+    @Override
+    public void displayAccountInfo() {
+
+        System.out.println(
+            "Account Number: " + accountNumber
+        );
+
+        System.out.println(
+            "Name: " + name
+        );
+
+        System.out.println(
+            "Age: " + age
+        );
+
+        System.out.println(
+            "Balance: Rs " + balance
+        );
+
+        System.out.println(
+            "Account Type: " + accountType
+        );
+
+        System.out.println(
+            "Status: " + status
+        );
+    }
+
+    @Override
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public int getAge() {
+        return age;
+    }
+
+    @Override
+    public double getBalance() {
+        return balance;
+    }
+
+    @Override
+    public String getAccountType() {
+        return accountType;
+    }
+
+    @Override
+    public String getStatus() {
+        return status;
+    }
+}

@@ -1,0 +1,51 @@
+package Activity11;
+
+public class SalaryAccount extends AbstractAccount {
+
+    private int inactiveMonths;
+    private String employerName;
+
+    public SalaryAccount(String accountNumber, String name, int age,
+                         double balance, String status, String pin,
+                         String employerName) {
+
+        super(
+            accountNumber,
+            name,
+            age,
+            balance,
+            "SALARY",
+            status,
+            pin
+        );
+
+        this.employerName = employerName;
+        this.inactiveMonths = 0;
+    }
+
+    @Override
+    public void processDebit(double amount)
+            throws InsufficientBalanceException {
+
+        if (amount > balance) {
+
+            throw new InsufficientBalanceException(
+                "Insufficient funds in Salary account"
+            );
+        }
+
+        balance -= amount;
+    }
+
+    public String getEmployerName() {
+        return employerName;
+    }
+
+    public int getInactiveMonths() {
+        return inactiveMonths;
+    }
+
+    public void incrementInactiveMonths() {
+        inactiveMonths++;
+    }
+}
